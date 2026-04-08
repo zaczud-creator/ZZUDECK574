@@ -1,0 +1,92 @@
+{
+  "studio_name": "Horizon Interactive",
+  "studio_size": "mid-size",
+  "team_size": 85,
+  "active_projects": 2,
+  "annual_revenue_usd": 15000000,
+
+  "team_structure": {
+    "developers": 30,
+    "artists": 20,
+    "qa_testers": 12,
+    "designers": 8,
+    "producers": 5,
+    "audio": 4,
+    "localization": 3,
+    "devops": 3
+  },
+
+  "tools": {
+    "engine": "Unreal Engine 5",
+    "version_control": "Perforce",
+    "project_management": "Jira",
+    "ci_cd": "Jenkins",
+    "art_pipeline": "Maya, Substance Painter, ZBrush",
+    "qa_tools": "TestRail, partial Selenium",
+    "localization_tools": "Crowdin",
+    "audio_tools": "Wwise, Pro Tools"
+  },
+
+  "qa_process": {
+    "type": "hybrid",
+    "hours_per_week": 480,
+    "testers": 12,
+    "automation_pct": 25,
+    "bug_tracking": "Jira",
+    "regression_testing": true,
+    "avg_bugs_per_build": 120,
+    "bug_escape_rate_pct": 11,
+    "notes": "Mixed manual and automated testing. Selenium covers basic UI flows. Most gameplay testing is manual. Regression suite runs nightly but coverage is low."
+  },
+
+  "localization": {
+    "languages": ["English", "Spanish", "French", "German", "Italian", "Portuguese", "Japanese", "Korean", "Chinese (Simplified)"],
+    "method": "hybrid",
+    "tools": "Crowdin",
+    "turnaround_days": 12,
+    "words_per_update": 25000,
+    "cost_per_word_usd": 0.10,
+    "hours_per_week": 60,
+    "notes": "Crowdin handles string management. Professional translators for EFIGS, cheaper vendors for Asian languages. Context screenshots are provided inconsistently. LQA is done in-house."
+  },
+
+  "asset_creation": {
+    "pipeline": "semi-structured",
+    "tools": ["Maya", "Substance Painter", "ZBrush", "Photoshop"],
+    "assets_per_artist_per_week": 7,
+    "revision_cycles": 4,
+    "hours_per_week": 800,
+    "notes": "Established art pipeline but manual handoffs between stages. Some reusable material libraries. Style guide exists but enforcement is inconsistent across teams."
+  },
+
+  "deployment": {
+    "method": "semi-automated",
+    "platform": ["Steam", "PlayStation", "Xbox"],
+    "build_time_minutes": 120,
+    "deploys_per_week": 2,
+    "rollback_rate_pct": 18,
+    "hours_per_week": 30,
+    "notes": "Jenkins handles builds but deployment to console platforms has manual steps. Separate build configs per platform cause drift. Hotfix process is ad-hoc."
+  },
+
+  "audio": {
+    "method": "in-house with outsourced VO",
+    "tools": ["Wwise", "Pro Tools"],
+    "lines_per_day": 150,
+    "recording_sessions_per_week": 3,
+    "post_processing_ratio": 4,
+    "hours_per_week": 80,
+    "notes": "Sound design done in-house. Voice recording outsourced to studios. Post-processing is time-intensive. Placeholder audio stays in builds too long."
+  },
+
+  "hourly_rates": {
+    "developer": 75,
+    "artist": 60,
+    "qa": 45,
+    "producer": 85,
+    "audio": 65,
+    "localization": 55,
+    "devops": 80,
+    "average": 65
+  }
+}

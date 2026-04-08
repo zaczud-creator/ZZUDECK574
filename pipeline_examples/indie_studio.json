@@ -1,0 +1,77 @@
+{
+  "studio_name": "Pixel Forge Games",
+  "studio_size": "indie",
+  "team_size": 12,
+  "active_projects": 1,
+  "annual_revenue_usd": 800000,
+
+  "team_structure": {
+    "developers": 5,
+    "artists": 3,
+    "qa_testers": 1,
+    "designers": 2,
+    "producers": 1,
+    "audio": 0,
+    "localization": 0
+  },
+
+  "tools": {
+    "engine": "Unity",
+    "version_control": "GitHub",
+    "project_management": "Trello",
+    "ci_cd": "manual_only",
+    "art_pipeline": "Blender, Photoshop",
+    "qa_tools": "manual_only",
+    "localization_tools": "Google Sheets"
+  },
+
+  "qa_process": {
+    "type": "manual",
+    "hours_per_week": 40,
+    "testers": 1,
+    "automation_pct": 0,
+    "bug_tracking": "GitHub Issues",
+    "regression_testing": false,
+    "avg_bugs_per_build": 35,
+    "bug_escape_rate_pct": 18,
+    "notes": "Single QA person handles all testing manually. No automated tests. Developers do some ad-hoc testing."
+  },
+
+  "localization": {
+    "languages": ["English", "Spanish", "French"],
+    "method": "manual",
+    "tools": "Google Sheets",
+    "turnaround_days": 21,
+    "words_per_update": 5000,
+    "cost_per_word_usd": 0.15,
+    "hours_per_week": 10,
+    "notes": "Freelance translators work from shared Google Sheets. No context provided for translators. Quality is inconsistent."
+  },
+
+  "asset_creation": {
+    "pipeline": "manual",
+    "tools": ["Blender", "Photoshop"],
+    "assets_per_artist_per_week": 5,
+    "revision_cycles": 6,
+    "hours_per_week": 90,
+    "notes": "Artists create all assets from scratch. No asset library. High revision count due to lack of style guide enforcement."
+  },
+
+  "deployment": {
+    "method": "manual",
+    "platform": ["Steam"],
+    "build_time_minutes": 45,
+    "deploys_per_week": 1,
+    "rollback_rate_pct": 25,
+    "hours_per_week": 8,
+    "notes": "Lead developer manually builds and uploads to Steam. No CI/CD pipeline. Rollbacks are painful."
+  },
+
+  "hourly_rates": {
+    "developer": 55,
+    "artist": 45,
+    "qa": 35,
+    "producer": 60,
+    "average": 48
+  }
+}

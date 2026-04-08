@@ -1,0 +1,105 @@
+{
+  "studio_name": "Titan Entertainment Group",
+  "studio_size": "AAA",
+  "team_size": 450,
+  "active_projects": 4,
+  "annual_revenue_usd": 200000000,
+
+  "team_structure": {
+    "developers": 160,
+    "artists": 100,
+    "qa_testers": 60,
+    "designers": 40,
+    "producers": 25,
+    "audio": 20,
+    "localization": 15,
+    "devops": 15,
+    "data_analytics": 10,
+    "community": 5
+  },
+
+  "tools": {
+    "engine": "Proprietary (TitanEngine 4.0)",
+    "version_control": "Perforce",
+    "project_management": "Jira + Confluence",
+    "ci_cd": "GitLab CI + custom orchestration",
+    "art_pipeline": "Maya, Substance Painter, Houdini, proprietary asset manager",
+    "qa_tools": "TestRail, custom automation framework, device farm",
+    "localization_tools": "memoQ + in-house TMS",
+    "audio_tools": "Wwise, Nuendo, custom dialogue pipeline"
+  },
+
+  "qa_process": {
+    "type": "structured",
+    "hours_per_week": 2400,
+    "testers": 60,
+    "automation_pct": 45,
+    "bug_tracking": "Jira",
+    "regression_testing": true,
+    "avg_bugs_per_build": 350,
+    "bug_escape_rate_pct": 6,
+    "notes": "Dedicated QA teams per project. Custom automation framework covers smoke tests and regression. Manual testing focused on gameplay and edge cases. Performance testing runs on device farm but results take 48hrs. Bug triage meetings consume significant producer time."
+  },
+
+  "localization": {
+    "languages": ["English", "Spanish (LATAM)", "Spanish (EU)", "French", "German", "Italian", "Portuguese (BR)", "Japanese", "Korean", "Chinese (Simplified)", "Chinese (Traditional)", "Arabic", "Turkish", "Polish", "Russian"],
+    "method": "professional",
+    "tools": "memoQ + in-house TMS",
+    "turnaround_days": 10,
+    "words_per_update": 80000,
+    "cost_per_word_usd": 0.14,
+    "hours_per_week": 200,
+    "notes": "15 languages across 4 titles. Dedicated loc team manages vendor relationships. Quality is high but turnaround is still a bottleneck for live-service content drops. Cultural adaptation reviews add 3-5 days. Loc bugs account for 15% of all shipped bugs."
+  },
+
+  "asset_creation": {
+    "pipeline": "structured",
+    "tools": ["Maya", "Substance Painter", "Houdini", "Photoshop", "Proprietary asset manager"],
+    "assets_per_artist_per_week": 6,
+    "revision_cycles": 5,
+    "hours_per_week": 4000,
+    "notes": "Established pipeline with proprietary asset management. Multiple art directors across projects create bottleneck in approval flow. Asset reuse across projects is low despite a shared library initiative. Texture and material creation is the slowest stage."
+  },
+
+  "deployment": {
+    "method": "automated with manual gates",
+    "platform": ["Steam", "Epic", "PlayStation", "Xbox", "Nintendo Switch", "Mobile (iOS/Android)"],
+    "build_time_minutes": 180,
+    "deploys_per_week": 5,
+    "rollback_rate_pct": 12,
+    "hours_per_week": 120,
+    "notes": "GitLab CI handles builds. Manual approval gates for console submissions. 6 platform targets mean build matrix is large. Mobile builds have separate pipeline. Average 3hrs from merge to deployable build. Console cert failures cause 1-2 week delays."
+  },
+
+  "audio": {
+    "method": "in-house + external studios",
+    "tools": ["Wwise", "Nuendo", "Custom dialogue pipeline"],
+    "lines_per_day": 180,
+    "recording_sessions_per_week": 8,
+    "post_processing_ratio": 3.5,
+    "hours_per_week": 300,
+    "notes": "Large VO casts across multiple titles. Custom dialogue pipeline handles branching narratives. Re-recording for localization is the biggest time sink. Music and ambient audio outsourced to specialized studios. Adaptive audio system requires extensive testing."
+  },
+
+  "project_management": {
+    "method": "Agile/Scrum with waterfall milestones",
+    "tools": "Jira + Confluence",
+    "sprint_length_weeks": 2,
+    "meeting_hours_per_dev_per_week": 14,
+    "schedule_overrun_pct": 30,
+    "hours_per_week": 350,
+    "notes": "Hybrid methodology — sprints within milestone-driven schedule. Cross-project dependencies create scheduling conflicts. Status reporting across 4 titles takes significant producer bandwidth. Velocity tracking exists but is not used for prediction."
+  },
+
+  "hourly_rates": {
+    "developer": 95,
+    "artist": 75,
+    "qa": 50,
+    "producer": 110,
+    "audio": 80,
+    "localization": 65,
+    "devops": 100,
+    "data_analytics": 90,
+    "average": 80
+  }
+}
