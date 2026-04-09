@@ -479,6 +479,223 @@ def generate_recommendation(
 
 
 # ---------------------------------------------------------------------------
+# Maturity model
+# ---------------------------------------------------------------------------
+MATURITY_LEVELS = {
+    1: {"label": "Ad-Hoc", "color_hint": "red",
+        "description": "No defined process. Manual, reactive, person-dependent."},
+    2: {"label": "Emerging", "color_hint": "red",
+        "description": "Basic tooling in place but inconsistent. Significant manual effort."},
+    3: {"label": "Defined", "color_hint": "yellow",
+        "description": "Structured process with some automation. Meets industry average."},
+    4: {"label": "Managed", "color_hint": "green",
+        "description": "Data-driven, mostly automated, continuous improvement. Top quartile."},
+    5: {"label": "Optimized", "color_hint": "green",
+        "description": "AI-augmented, fully integrated, industry-leading. Competitive advantage."},
+}
+
+
+def score_pipeline_maturity(
+    category: str,
+    automation_pct: float,
+    has_ai_tooling: bool,
+    meets_industry_avg: bool,
+    exceeds_industry_avg: bool,
+    process_documented: bool,
+    notes: str,
+) -> dict:
+    """Score a pipeline area on a 1-5 maturity scale with diagnostic reasoning."""
+    # Calculate base score from inputs
+    score = 1
+    factors = []
+
+    if automation_pct >= 60:
+        score += 2
+        factors.append(f"Strong automation at {automation_pct}%")
+    elif automation_pct >= 25:
+        score += 1
+        factors.append(f"Partial automation at {automation_pct}%")
+    else:
+        factors.append(f"Minimal automation at {automation_pct}%")
+
+    if has_ai_tooling:
+        score += 1
+        factors.append("AI tooling already in use")
+    else:
+        factors.append("No AI tooling in current workflow")
+
+    if exceeds_industry_avg:
+        score += 1
+        factors.append("Exceeds industry average performance")
+    elif meets_industry_avg:
+        factors.append("Meets but does not exceed industry average")
+    else:
+        factors.append("Below industry average performance")
+
+    if process_documented:
+        score = max(score, 2)  # documented = at least Emerging
+        factors.append("Process is documented/structured")
+    else:
+        score = min(score, 3)  # undocumented caps at Defined
+        factors.append("Process is undocumented or ad-hoc")
+
+    score = max(1, min(5, score))
+    maturity = MATURITY_LEVELS[score]
+
+    # Determine gap to next level
+    if score < 5:
+        next_level = MATURITY_LEVELS[score + 1]
+        gap_description = f"To reach '{next_level['label']}': increase automation, adopt AI tooling, formalize processes"
+    else:
+        gap_description = "Industry-leading maturity. Focus on maintaining competitive advantage."
+
+    return {
+        "category": category,
+        "maturity_score": score,
+        "maturity_label": maturity["label"],
+        "maturity_description": maturity["description"],
+        "factors": factors,
+        "gap_to_next_level": gap_description,
+        "notes": notes,
+    }
+
+
+def analyze_cross_cutting_risks(
+    studio_name: str,
+    studio_size: str,
+    team_size: int,
+    annual_revenue: int,
+    maturity_scores: list,
+    bottleneck_count: int,
+    total_annual_savings: float,
+    key_pain_points: list,
+) -> dict:
+    """Analyze systemic patterns and strategic risks across the full pipeline."""
+    risks = []
+    opportunities = []
+    themes = []
+
+    # Analyze maturity distribution
+    avg_maturity = sum(m.get("maturity_score", 2) for m in maturity_scores) / max(len(maturity_scores), 1)
+    lowest = min(maturity_scores, key=lambda m: m.get("maturity_score", 5)) if maturity_scores else {}
+    highest = max(maturity_scores, key=lambda m: m.get("maturity_score", 0)) if maturity_scores else {}
+
+    if avg_maturity < 2.5:
+        themes.append({
+            "theme": "Systemic Manual Process Dependency",
+            "insight": (
+                f"Average pipeline maturity is {avg_maturity:.1f}/5. The studio relies heavily on "
+                f"manual processes across most areas. This creates single points of failure — when key "
+                f"people leave, institutional knowledge leaves with them. AI augmentation would provide "
+                f"the largest relative improvement here."
+            ),
+        })
+    elif avg_maturity < 3.5:
+        themes.append({
+            "theme": "Uneven Pipeline Maturity",
+            "insight": (
+                f"Average maturity is {avg_maturity:.1f}/5, but the gap between strongest "
+                f"({highest.get('category', '?')}: {highest.get('maturity_score', '?')}) and weakest "
+                f"({lowest.get('category', '?')}: {lowest.get('maturity_score', '?')}) areas is significant. "
+                f"Weakest links constrain overall throughput — a fast art pipeline means nothing if QA "
+                f"can't keep up."
+            ),
+        })
+
+    # Revenue risk analysis
+    savings_pct = (total_annual_savings / max(annual_revenue, 1)) * 100
+    if savings_pct > 10:
+        risks.append({
+            "risk": "Revenue Efficiency Gap",
+            "detail": (
+                f"Identified savings of ${total_annual_savings:,.0f} represent {savings_pct:.1f}% of "
+                f"annual revenue. This level of inefficiency puts the studio at a competitive disadvantage "
+                f"against peers who have already adopted AI tooling."
+            ),
+        })
+
+    # Live-service risk
+    live_service_pain = any("live" in p.lower() or "content drop" in p.lower() or "turnaround" in p.lower()
+                           for p in key_pain_points)
+    if live_service_pain:
+        risks.append({
+            "risk": "Live-Service Velocity Risk",
+            "detail": (
+                "Multiple pipeline areas cite content delivery delays. In live-service games, "
+                "slow content cadence directly correlates with player churn. Each day of delay "
+                "in localization, QA, or asset delivery represents measurable revenue loss."
+            ),
+        })
+
+    # Talent risk
+    manual_heavy = any("manual" in p.lower() or "single" in p.lower() or "one person" in p.lower()
+                       for p in key_pain_points)
+    if manual_heavy:
+        risks.append({
+            "risk": "Key-Person Dependency / Talent Risk",
+            "detail": (
+                "Manual processes depend on specific individuals. If critical team members leave, "
+                "the studio faces knowledge loss and process disruption. AI tooling and process "
+                "documentation create institutional resilience."
+            ),
+        })
+
+    # Quality reputation risk
+    quality_pain = any("bug" in p.lower() or "escape" in p.lower() or "toxic" in p.lower()
+                       or "complaint" in p.lower() for p in key_pain_points)
+    if quality_pain:
+        risks.append({
+            "risk": "Quality & Reputation Exposure",
+            "detail": (
+                "Elevated bug escape rates, player complaints, or toxicity issues represent "
+                "reputational risk. In the age of social media and Steam reviews, quality failures "
+                "have outsized impact on player acquisition and retention."
+            ),
+        })
+
+    # Scale readiness
+    if team_size < 50:
+        opportunities.append({
+            "opportunity": "AI as a Force Multiplier for Small Teams",
+            "detail": (
+                f"At {team_size} people, AI tooling doesn't replace headcount — it multiplies the "
+                f"output of each team member. A small studio with AI-augmented pipelines can compete "
+                f"with studios 3-5x its size on content volume and quality."
+            ),
+        })
+    elif team_size > 200:
+        opportunities.append({
+            "opportunity": "AI-Driven Coordination at Scale",
+            "detail": (
+                f"At {team_size} people across multiple projects, coordination overhead is the hidden "
+                f"tax. AI tools for automated testing, translation, and content moderation reduce the "
+                f"cross-team synchronization burden that grows quadratically with team size."
+            ),
+        })
+
+    # Industry timing
+    opportunities.append({
+        "opportunity": "AI Adoption Window",
+        "detail": (
+            "Per GDC 2025, 90% of game developers are integrating AI and 97% believe generative AI "
+            "is reshaping the industry. Studios that adopt now build compounding advantages in "
+            "pipeline velocity, cost structure, and talent efficiency. Studios that wait will find "
+            "themselves competing against AI-augmented rivals with fundamentally different cost structures."
+        ),
+    })
+
+    return {
+        "studio_name": studio_name,
+        "average_maturity": round(avg_maturity, 1),
+        "weakest_area": lowest.get("category", "Unknown"),
+        "strongest_area": highest.get("category", "Unknown"),
+        "cross_cutting_themes": themes,
+        "strategic_risks": risks,
+        "strategic_opportunities": opportunities,
+    }
+
+
+# ---------------------------------------------------------------------------
 # Tool dispatch map
 # ---------------------------------------------------------------------------
 TOOL_DISPATCH = {
@@ -487,6 +704,8 @@ TOOL_DISPATCH = {
     "estimate_savings": estimate_savings,
     "assess_complexity": assess_complexity,
     "generate_recommendation": generate_recommendation,
+    "score_pipeline_maturity": score_pipeline_maturity,
+    "analyze_cross_cutting_risks": analyze_cross_cutting_risks,
 }
 
 
@@ -633,6 +852,103 @@ TOOL_DEFINITIONS = [
                 },
             },
             "required": ["bottleneck", "benchmark_data", "savings"],
+        },
+    },
+    {
+        "name": "score_pipeline_maturity",
+        "description": (
+            "Score a specific pipeline area on a 1-5 maturity scale. "
+            "1=Ad-Hoc (manual, reactive), 2=Emerging (basic tooling), "
+            "3=Defined (structured, meets industry avg), 4=Managed (data-driven, top quartile), "
+            "5=Optimized (AI-augmented, industry-leading). "
+            "Call this for EACH pipeline area to build a maturity scorecard."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string",
+                    "description": "Pipeline area being scored (e.g., 'QA', 'Localization', 'Asset Creation').",
+                },
+                "automation_pct": {
+                    "type": "number",
+                    "description": "Current automation percentage in this area (0-100).",
+                },
+                "has_ai_tooling": {
+                    "type": "boolean",
+                    "description": "Whether AI-specific tooling is currently used.",
+                },
+                "meets_industry_avg": {
+                    "type": "boolean",
+                    "description": "Whether this area meets or approaches industry average performance.",
+                },
+                "exceeds_industry_avg": {
+                    "type": "boolean",
+                    "description": "Whether this area exceeds industry average performance.",
+                },
+                "process_documented": {
+                    "type": "boolean",
+                    "description": "Whether the process is documented or structured (vs ad-hoc).",
+                },
+                "notes": {
+                    "type": "string",
+                    "description": "Brief diagnostic note explaining the score rationale.",
+                },
+            },
+            "required": ["category", "automation_pct", "has_ai_tooling",
+                         "meets_industry_avg", "exceeds_industry_avg",
+                         "process_documented", "notes"],
+        },
+    },
+    {
+        "name": "analyze_cross_cutting_risks",
+        "description": (
+            "Analyze systemic patterns, strategic risks, and opportunities across "
+            "the studio's entire pipeline. Call this AFTER scoring maturity and generating "
+            "all recommendations. Provides cross-cutting themes, competitive risk assessment, "
+            "and strategic opportunities."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "studio_name": {
+                    "type": "string",
+                    "description": "Name of the studio.",
+                },
+                "studio_size": {
+                    "type": "string",
+                    "description": "Size category (indie, mid-size, AAA).",
+                },
+                "team_size": {
+                    "type": "integer",
+                    "description": "Total team headcount.",
+                },
+                "annual_revenue": {
+                    "type": "integer",
+                    "description": "Annual revenue in USD.",
+                },
+                "maturity_scores": {
+                    "type": "array",
+                    "items": {"type": "object"},
+                    "description": "Array of maturity score objects from score_pipeline_maturity calls.",
+                },
+                "bottleneck_count": {
+                    "type": "integer",
+                    "description": "Number of bottlenecks identified.",
+                },
+                "total_annual_savings": {
+                    "type": "number",
+                    "description": "Sum of projected annual savings across all recommendations.",
+                },
+                "key_pain_points": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Key pain points extracted from the pipeline notes fields.",
+                },
+            },
+            "required": ["studio_name", "studio_size", "team_size", "annual_revenue",
+                         "maturity_scores", "bottleneck_count", "total_annual_savings",
+                         "key_pain_points"],
         },
     },
 ]

@@ -183,28 +183,56 @@ YOUR TOOLS:
 - estimate_savings: Financial impact and ROI projections
 - assess_complexity: Implementation difficulty + relevant KWS solution mapping
 - generate_recommendation: Structured recommendation with severity rating
+- score_pipeline_maturity: Score each area 1-5 on a maturity model
+- analyze_cross_cutting_risks: Strategic risk and opportunity analysis across the full pipeline
 
-AUDIT METHODOLOGY:
-1. Read the pipeline configuration carefully. Note studio size, team composition, \
-current tools, and pain points described in the notes fields.
-2. Identify the top 3-5 bottlenecks where the studio underperforms vs. industry benchmarks.
-3. For EACH bottleneck:
-   a. lookup_benchmark — get industry comparison data
-   b. lookup_kws_solution — identify the relevant Keywords Studios offering
-   c. estimate_savings — quantify the financial impact
-   d. assess_complexity — evaluate implementation difficulty
-   e. generate_recommendation — create a structured recommendation
-4. Provide a final prioritized summary.
+AUDIT METHODOLOGY (follow this order strictly):
+
+PHASE 1 — MATURITY ASSESSMENT:
+Score each relevant pipeline area (qa, localization, asset_creation, deployment, audio, \
+player_support, trust_and_safety) using score_pipeline_maturity. Read the pipeline notes \
+carefully to determine automation_pct, whether AI tooling exists, and whether they meet \
+industry benchmarks. This builds the maturity scorecard.
+
+PHASE 2 — BOTTLENECK ANALYSIS:
+Identify the top 3-4 bottlenecks. For EACH bottleneck, you MUST call ALL FIVE tools \
+in this exact order — do NOT skip any:
+   a. lookup_benchmark — industry comparison
+   b. lookup_kws_solution — relevant Keywords Studios offering
+   c. estimate_savings — financial impact and ROI (REQUIRED — never skip this)
+   d. assess_complexity — difficulty + KWS solution mapping (REQUIRED — never skip this)
+   e. generate_recommendation — structured recommendation (use the savings from step c)
+CRITICAL: Every generate_recommendation MUST be preceded by estimate_savings for the \
+same area. The projected_annual_savings in the recommendation should match the \
+estimate_savings result. If you skip estimate_savings, the report will show $0 savings.
+
+PHASE 3 — STRATEGIC ANALYSIS (REQUIRED — do not skip):
+You MUST call analyze_cross_cutting_risks after all recommendations are generated. \
+Pass in: studio_name, studio_size, team_size, annual_revenue, all maturity_scores \
+collected in Phase 1, the number of bottlenecks, the total annual savings sum, and \
+key_pain_points extracted from the pipeline notes.
+
+PHASE 4 — NARRATIVE SYNTHESIS (REQUIRED — do not skip):
+After ALL tool calls are complete, you MUST write a final narrative synthesis. \
+This is the most important part of the audit. It must include:
+1. Executive assessment: 2-3 sentences on overall pipeline health
+2. Systemic diagnosis: the single deepest structural problem (not just biggest cost)
+3. Interconnection analysis: how the bottlenecks feed into each other (e.g., slow loc \
+   delays content drops which hurts player retention which increases support load)
+4. Inaction risk: what happens if the studio does nothing for 12 months
+5. Phased implementation: recommended sequence with reasoning for the ordering
 
 IMPORTANT GUIDELINES:
-- Be specific. Reference actual numbers from the pipeline config and compare them to benchmarks.
-- Explain your reasoning before each tool call — the client should understand your thinking.
-- Frame recommendations in terms of the Keywords Studios solution that addresses each bottleneck.
-- Consider the studio's size and budget when calibrating recommendations (an indie studio \
-needs different solutions than a AAA publisher).
-- Reference Project KARA findings where relevant to asset creation, lighting, animation, or \
-agent swarm applications.
+- Be specific. Reference actual numbers and compare to benchmarks.
+- Keep reasoning CONCISE — 1-2 sentences before each tool call, not paragraphs.
+- Frame recommendations in terms of Keywords Studios solutions.
+- Consider studio size and budget.
+- Reference Project KARA findings where relevant.
 - Be candid about complexity and risks, not just savings.
+- Read the "notes" fields carefully.
+- Think like a consultant: the client is paying for INSIGHT, not just data.
+- Budget your analysis: Phases 3 and 4 are the most valuable parts. Do not exhaust \
+  your response on verbose reasoning in Phase 2. Limit Phase 2 bottlenecks to 4 max.
 """
 
 
@@ -237,8 +265,11 @@ def run_agent(pipeline: dict, json_output: Optional[str] = None) -> None:
 
     recommendations = []
     complexities = []
+    maturity_scores = []
+    cross_cutting = None
+    narrative_text = []
     step = 0
-    total_steps = 5
+    total_steps = 7
 
     step_header(1, total_steps, "Reading Pipeline Config")
     print(f"  {Style.GREEN}  Loaded pipeline for {studio_name}{Style.RESET}")
@@ -246,12 +277,12 @@ def run_agent(pipeline: dict, json_output: Optional[str] = None) -> None:
 
     # Agentic loop
     iteration = 0
-    max_iterations = 20  # safety limit
+    max_iterations = 25  # safety limit
     while iteration < max_iterations:
         iteration += 1
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
-            max_tokens=4096,
+            max_tokens=8192,
             system=SYSTEM_PROMPT,
             tools=TOOL_DEFINITIONS,
             messages=messages,
@@ -265,20 +296,33 @@ def run_agent(pipeline: dict, json_output: Optional[str] = None) -> None:
                 if text:
                     # Detect step transitions
                     lower = text.lower()
-                    if any(kw in lower for kw in ["benchmark", "industry", "compare"]) and step < 2:
+                    if any(kw in lower for kw in ["maturity", "score_pipeline", "scoring"]) and step < 2:
                         step = 2
-                        step_header(2, total_steps, "Benchmarking Against Industry Standards")
-                    elif any(kw in lower for kw in ["saving", "cost", "financial", "roi"]) and step < 3:
+                        step_header(2, total_steps, "Pipeline Maturity Assessment")
+                    elif any(kw in lower for kw in ["benchmark", "industry", "compare", "bottleneck"]) and step < 3:
                         step = 3
-                        step_header(3, total_steps, "Estimating Cost Savings & ROI")
-                    elif any(kw in lower for kw in ["complex", "implement", "risk"]) and step < 4:
+                        step_header(3, total_steps, "Bottleneck Analysis & Benchmarking")
+                    elif any(kw in lower for kw in ["saving", "cost", "financial", "roi"]) and step < 4:
                         step = 4
-                        step_header(4, total_steps, "Assessing Complexity & KWS Solutions")
-                    elif any(kw in lower for kw in ["recommend", "priorit", "action plan", "summary", "conclusion"]) and step < 5:
+                        step_header(4, total_steps, "Financial Impact & ROI")
+                    elif any(kw in lower for kw in ["complex", "implement"]) and step < 5:
                         step = 5
-                        step_header(5, total_steps, "Generating Prioritized Action Plan")
+                        step_header(5, total_steps, "Complexity & KWS Solution Mapping")
+                    elif any(kw in lower for kw in ["cross.cutting", "strategic risk", "systemic", "analyze_cross"]) and step < 6:
+                        step = 6
+                        step_header(6, total_steps, "Strategic Risk & Opportunity Analysis")
+                    elif any(kw in lower for kw in ["narrative", "executive assessment", "synthesis", "priorit", "action plan", "summary", "conclusion", "phased"]) and step < 7:
+                        step = 7
+                        step_header(7, total_steps, "Executive Narrative & Action Plan")
 
                     agent_thought(text)
+
+                    # Capture narrative text — look for Phase 4 / synthesis content
+                    if ("phase 4" in lower or "executive assessment" in lower
+                            or "systemic diagnosis" in lower or "inaction" in lower
+                            or "phased implementation" in lower
+                            or "interconnection" in lower or step >= 7):
+                        narrative_text.append(text)
 
             elif block.type == "tool_use":
                 tool_call_display(block.name, block.input)
@@ -292,6 +336,10 @@ def run_agent(pipeline: dict, json_output: Optional[str] = None) -> None:
                     recommendations.append(result_data)
                 elif block.name == "assess_complexity" and "error" not in result_data:
                     complexities.append(result_data)
+                elif block.name == "score_pipeline_maturity" and "error" not in result_data:
+                    maturity_scores.append(result_data)
+                elif block.name == "analyze_cross_cutting_risks" and "error" not in result_data:
+                    cross_cutting = result_data
 
         # Send tool results back to Claude
         if tool_results:
@@ -323,14 +371,22 @@ def run_agent(pipeline: dict, json_output: Optional[str] = None) -> None:
     print(f"\n{Style.BOLD}{Style.GREEN}Analysis complete. Generating report...{Style.RESET}\n")
     time.sleep(0.3)
 
-    if recommendations:
-        render_report(studio_name, recommendations, complexities)
+    narrative = "\n\n".join(narrative_text) if narrative_text else None
+
+    if recommendations or maturity_scores:
+        render_report(
+            studio_name, recommendations, complexities,
+            maturity_scores, cross_cutting, narrative,
+        )
     else:
         print(f"{Style.YELLOW}No structured recommendations were generated.{Style.RESET}")
         print(f"{Style.DIM}The agent's analysis is shown above.{Style.RESET}")
 
-    if json_output and recommendations:
-        save_report_json(studio_name, recommendations, complexities, json_output)
+    if json_output and (recommendations or maturity_scores):
+        save_report_json(
+            studio_name, recommendations, complexities,
+            json_output, maturity_scores, cross_cutting, narrative,
+        )
 
 
 # ---------------------------------------------------------------------------
