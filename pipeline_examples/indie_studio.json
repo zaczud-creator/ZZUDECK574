@@ -3,6 +3,8 @@
   "studio_size": "indie",
   "team_size": 12,
   "active_projects": 1,
+  "primary_genre": "action-adventure",
+  "platforms": ["Steam"],
   "annual_revenue_usd": 800000,
 
   "team_structure": {
@@ -12,7 +14,8 @@
     "designers": 2,
     "producers": 1,
     "audio": 0,
-    "localization": 0
+    "localization": 0,
+    "community": 0
   },
 
   "tools": {
@@ -22,7 +25,8 @@
     "ci_cd": "manual_only",
     "art_pipeline": "Blender, Photoshop",
     "qa_tools": "manual_only",
-    "localization_tools": "Google Sheets"
+    "localization_tools": "Google Sheets",
+    "audio_tools": "Audacity, freelance VO"
   },
 
   "qa_process": {
@@ -34,7 +38,7 @@
     "regression_testing": false,
     "avg_bugs_per_build": 35,
     "bug_escape_rate_pct": 18,
-    "notes": "Single QA person handles all testing manually. No automated tests. Developers do some ad-hoc testing."
+    "notes": "Single QA person handles all testing manually. No automated tests. Developers do some ad-hoc testing. Critical bugs regularly ship to players. No device farm — only tested on 2 machines."
   },
 
   "localization": {
@@ -45,7 +49,7 @@
     "words_per_update": 5000,
     "cost_per_word_usd": 0.15,
     "hours_per_week": 10,
-    "notes": "Freelance translators work from shared Google Sheets. No context provided for translators. Quality is inconsistent."
+    "notes": "Freelance translators work from shared Google Sheets. No context screenshots for translators. Quality inconsistent — community reports frequent localization bugs. No LQA process."
   },
 
   "asset_creation": {
@@ -54,7 +58,7 @@
     "assets_per_artist_per_week": 5,
     "revision_cycles": 6,
     "hours_per_week": 90,
-    "notes": "Artists create all assets from scratch. No asset library. High revision count due to lack of style guide enforcement."
+    "notes": "Artists create all assets from scratch. No asset library. No procedural workflows. High revision count due to lack of style guide enforcement. Texture creation is the biggest bottleneck — takes ~60% of art time."
   },
 
   "deployment": {
@@ -64,7 +68,17 @@
     "deploys_per_week": 1,
     "rollback_rate_pct": 25,
     "hours_per_week": 8,
-    "notes": "Lead developer manually builds and uploads to Steam. No CI/CD pipeline. Rollbacks are painful."
+    "notes": "Lead developer manually builds and uploads to Steam. No CI/CD pipeline. Rollbacks are painful — last one took 6 hours. No staging environment."
+  },
+
+  "player_support": {
+    "method": "Discord + email",
+    "tools": "Discord, Gmail",
+    "avg_tickets_per_week": 150,
+    "avg_response_time_hours": 48,
+    "automation_pct": 0,
+    "hours_per_week": 12,
+    "notes": "Producer handles player support part-time via Discord and email. No ticketing system. No FAQ automation. Response times are slow and inconsistent."
   },
 
   "hourly_rates": {

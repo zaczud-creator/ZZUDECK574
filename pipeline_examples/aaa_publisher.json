@@ -3,6 +3,8 @@
   "studio_size": "AAA",
   "team_size": 450,
   "active_projects": 4,
+  "primary_genre": "multi-genre (action, RPG, live-service, mobile)",
+  "platforms": ["Steam", "Epic", "PlayStation", "Xbox", "Nintendo Switch", "iOS", "Android"],
   "annual_revenue_usd": 200000000,
 
   "team_structure": {
@@ -26,7 +28,9 @@
     "art_pipeline": "Maya, Substance Painter, Houdini, proprietary asset manager",
     "qa_tools": "TestRail, custom automation framework, device farm",
     "localization_tools": "memoQ + in-house TMS",
-    "audio_tools": "Wwise, Nuendo, custom dialogue pipeline"
+    "audio_tools": "Wwise, Nuendo, custom dialogue pipeline",
+    "player_support_tools": "in-house ticketing system",
+    "trust_and_safety_tools": "in-house moderation tools"
   },
 
   "qa_process": {
@@ -38,7 +42,7 @@
     "regression_testing": true,
     "avg_bugs_per_build": 350,
     "bug_escape_rate_pct": 6,
-    "notes": "Dedicated QA teams per project. Custom automation framework covers smoke tests and regression. Manual testing focused on gameplay and edge cases. Performance testing runs on device farm but results take 48hrs. Bug triage meetings consume significant producer time."
+    "notes": "Dedicated QA teams per project. Custom automation framework covers smoke tests and regression. Manual testing focused on gameplay and edge cases. Performance testing runs on device farm but results take 48hrs — too slow for daily builds. Bug triage meetings consume 20+ hours of producer time weekly across 4 titles. Console cert failures average once per submission. Mobile builds have entirely separate QA process with its own team."
   },
 
   "localization": {
@@ -49,7 +53,7 @@
     "words_per_update": 80000,
     "cost_per_word_usd": 0.14,
     "hours_per_week": 200,
-    "notes": "15 languages across 4 titles. Dedicated loc team manages vendor relationships. Quality is high but turnaround is still a bottleneck for live-service content drops. Cultural adaptation reviews add 3-5 days. Loc bugs account for 15% of all shipped bugs."
+    "notes": "15 languages across 4 titles. Dedicated loc team manages vendor relationships. Quality is high but turnaround is the bottleneck — live-service content drops are delayed 7-10 days for loc. Cultural adaptation reviews add 3-5 days. Loc bugs account for 15% of all shipped bugs. No machine translation — all human. Re-recording localized VO is the single most expensive line item in the loc budget. Vendors report inconsistent terminology across the 4 titles."
   },
 
   "asset_creation": {
@@ -58,7 +62,7 @@
     "assets_per_artist_per_week": 6,
     "revision_cycles": 5,
     "hours_per_week": 4000,
-    "notes": "Established pipeline with proprietary asset management. Multiple art directors across projects create bottleneck in approval flow. Asset reuse across projects is low despite a shared library initiative. Texture and material creation is the slowest stage."
+    "notes": "Established pipeline with proprietary asset management. Multiple art directors across projects create bottleneck in approval flow — average 3-day wait for art review. Asset reuse across the 4 projects is below 10% despite a shared library initiative launched 2 years ago. Texture and material creation is the slowest stage (~40% of artist time). Some Houdini procedural workflows but only 2 artists know how to use them. No AI-assisted tooling. Concept-to-final pipeline takes 4-6 weeks for hero assets."
   },
 
   "deployment": {
@@ -68,7 +72,7 @@
     "deploys_per_week": 5,
     "rollback_rate_pct": 12,
     "hours_per_week": 120,
-    "notes": "GitLab CI handles builds. Manual approval gates for console submissions. 6 platform targets mean build matrix is large. Mobile builds have separate pipeline. Average 3hrs from merge to deployable build. Console cert failures cause 1-2 week delays."
+    "notes": "GitLab CI handles builds. Manual approval gates for console submissions. 7 platform targets mean build matrix is large — 180 minutes is the critical path. Mobile builds have a completely separate pipeline maintained by 2 devops engineers. Average 3hrs from merge to deployable build. Console cert failures cause 1-2 week delays and happen ~quarterly. DevOps team is bottlenecked — 3-week backlog of infrastructure requests."
   },
 
   "audio": {
@@ -78,7 +82,28 @@
     "recording_sessions_per_week": 8,
     "post_processing_ratio": 3.5,
     "hours_per_week": 300,
-    "notes": "Large VO casts across multiple titles. Custom dialogue pipeline handles branching narratives. Re-recording for localization is the biggest time sink. Music and ambient audio outsourced to specialized studios. Adaptive audio system requires extensive testing."
+    "notes": "Large VO casts across 4 titles — over 200 unique characters total. Custom dialogue pipeline handles branching narratives. Re-recording for localized VO is the biggest time sink — 15 languages x multiple sessions. Lip-sync and facial animation is manually authored, taking 3-5 days per cinematic scene. Music and ambient audio outsourced to specialized studios. Adaptive audio system requires extensive QA testing. No AI-assisted animation or voice tools currently in use."
+  },
+
+  "player_support": {
+    "method": "in-house team + overflow outsource",
+    "tools": "in-house ticketing system",
+    "avg_tickets_per_week": 15000,
+    "avg_response_time_hours": 12,
+    "automation_pct": 15,
+    "csat_score": 3.4,
+    "hours_per_week": 400,
+    "notes": "10-person support team with overflow outsourcing during launches. In-house ticketing system is aging and lacks modern AI features. Basic macro responses handle ~15% of tickets. Non-English tickets are routed to bilingual agents (limited to 5 languages). No automated resolution — every ticket requires human touch. Player churn after poor support experience estimated at 8%. No integration between support data and game analytics."
+  },
+
+  "trust_and_safety": {
+    "method": "in-house moderation team",
+    "tools": "in-house tools, basic word filter",
+    "moderation_hours_per_week": 160,
+    "reports_per_week": 8000,
+    "avg_response_minutes": 45,
+    "false_positive_rate_pct": 18,
+    "notes": "8-person moderation team across 4 titles. Basic keyword filter catches obvious violations but misses nuanced toxicity and context-dependent abuse. Voice chat in multiplayer title is completely unmoderated — top player complaint. No proactive moderation — purely reactive to reports. High false positive rate frustrates legitimate players. No AI content moderation tools. Recent press coverage of toxicity in flagship multiplayer title."
   },
 
   "project_management": {
@@ -88,7 +113,7 @@
     "meeting_hours_per_dev_per_week": 14,
     "schedule_overrun_pct": 30,
     "hours_per_week": 350,
-    "notes": "Hybrid methodology — sprints within milestone-driven schedule. Cross-project dependencies create scheduling conflicts. Status reporting across 4 titles takes significant producer bandwidth. Velocity tracking exists but is not used for prediction."
+    "notes": "Hybrid methodology — sprints within milestone-driven schedule. Cross-project dependencies create scheduling conflicts weekly. Status reporting across 4 titles takes 15+ hours of producer time per week. Velocity tracking exists in Jira but is not used for prediction — schedules are set by gut feel. Knowledge sharing between teams is minimal despite Confluence. Onboarding new team members takes 4-6 weeks due to undocumented tribal knowledge."
   },
 
   "hourly_rates": {
@@ -100,6 +125,7 @@
     "localization": 65,
     "devops": 100,
     "data_analytics": 90,
+    "community": 55,
     "average": 80
   }
 }

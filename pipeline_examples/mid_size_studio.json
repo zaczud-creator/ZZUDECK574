@@ -3,6 +3,8 @@
   "studio_size": "mid-size",
   "team_size": 85,
   "active_projects": 2,
+  "primary_genre": "live-service multiplayer",
+  "platforms": ["Steam", "PlayStation", "Xbox"],
   "annual_revenue_usd": 15000000,
 
   "team_structure": {
@@ -13,7 +15,8 @@
     "producers": 5,
     "audio": 4,
     "localization": 3,
-    "devops": 3
+    "devops": 3,
+    "community": 2
   },
 
   "tools": {
@@ -24,7 +27,8 @@
     "art_pipeline": "Maya, Substance Painter, ZBrush",
     "qa_tools": "TestRail, partial Selenium",
     "localization_tools": "Crowdin",
-    "audio_tools": "Wwise, Pro Tools"
+    "audio_tools": "Wwise, Pro Tools",
+    "player_support_tools": "Zendesk"
   },
 
   "qa_process": {
@@ -36,7 +40,7 @@
     "regression_testing": true,
     "avg_bugs_per_build": 120,
     "bug_escape_rate_pct": 11,
-    "notes": "Mixed manual and automated testing. Selenium covers basic UI flows. Most gameplay testing is manual. Regression suite runs nightly but coverage is low."
+    "notes": "Mixed manual and automated testing. Selenium covers basic UI flows but no gameplay automation. Regression suite runs nightly but coverage is only ~25%. Console-specific bugs frequently slip through. Performance testing is ad-hoc — no dedicated device farm. Bug triage meetings consume 10+ hours of producer time weekly."
   },
 
   "localization": {
@@ -47,7 +51,7 @@
     "words_per_update": 25000,
     "cost_per_word_usd": 0.10,
     "hours_per_week": 60,
-    "notes": "Crowdin handles string management. Professional translators for EFIGS, cheaper vendors for Asian languages. Context screenshots are provided inconsistently. LQA is done in-house."
+    "notes": "Crowdin handles string management. Professional translators for EFIGS, cheaper vendors for Asian languages. Context screenshots provided inconsistently — translators often guess at UI context. LQA done in-house but only covers 60% of strings. Live-service content drops are delayed 5-7 days waiting for loc. Loc bugs account for ~12% of all player-reported issues."
   },
 
   "asset_creation": {
@@ -56,7 +60,7 @@
     "assets_per_artist_per_week": 7,
     "revision_cycles": 4,
     "hours_per_week": 800,
-    "notes": "Established art pipeline but manual handoffs between stages. Some reusable material libraries. Style guide exists but enforcement is inconsistent across teams."
+    "notes": "Established art pipeline but manual handoffs between stages. Some reusable material libraries but low adoption. Style guide exists but enforcement is inconsistent across the two project teams. No AI-assisted tooling. Concept-to-final takes 3-4 weeks for hero assets. Texture and material creation is the slowest stage. No procedural workflows — everything is hand-authored."
   },
 
   "deployment": {
@@ -66,7 +70,7 @@
     "deploys_per_week": 2,
     "rollback_rate_pct": 18,
     "hours_per_week": 30,
-    "notes": "Jenkins handles builds but deployment to console platforms has manual steps. Separate build configs per platform cause drift. Hotfix process is ad-hoc."
+    "notes": "Jenkins handles builds but deployment to console platforms has manual steps. Separate build configs per platform cause configuration drift. Hotfix process is ad-hoc and stressful — last emergency patch took 14 hours. Console cert failures happen ~once per quarter, causing 1-2 week delays."
   },
 
   "audio": {
@@ -76,7 +80,28 @@
     "recording_sessions_per_week": 3,
     "post_processing_ratio": 4,
     "hours_per_week": 80,
-    "notes": "Sound design done in-house. Voice recording outsourced to studios. Post-processing is time-intensive. Placeholder audio stays in builds too long."
+    "notes": "Sound design done in-house. Voice recording outsourced to LA studios. Post-processing is time-intensive — 4 hours per hour recorded. Lip-sync animation done manually by animators, adding 2-3 days per character scene. Placeholder audio stays in builds too long. Localized VO only covers EFIGS — Asian languages use subtitles only."
+  },
+
+  "player_support": {
+    "method": "Zendesk + Discord",
+    "tools": "Zendesk",
+    "avg_tickets_per_week": 2000,
+    "avg_response_time_hours": 18,
+    "automation_pct": 10,
+    "csat_score": 3.2,
+    "hours_per_week": 80,
+    "notes": "Two community managers handle support. Zendesk has basic macro responses but no AI automation. Players complain about response times on Steam reviews. Non-English tickets go to the bottom of the queue — no multilingual support capability. No sentiment analysis or churn prediction."
+  },
+
+  "trust_and_safety": {
+    "method": "manual moderation",
+    "tools": "Discord bots, manual review",
+    "moderation_hours_per_week": 20,
+    "reports_per_week": 500,
+    "avg_response_minutes": 60,
+    "false_positive_rate_pct": 15,
+    "notes": "Community managers handle moderation in addition to support duties. Discord bots catch obvious slurs but miss context-dependent toxicity. In-game voice chat is completely unmoderated. Player reports are reviewed manually with 24-48 hour turnaround."
   },
 
   "hourly_rates": {
@@ -87,6 +112,7 @@
     "audio": 65,
     "localization": 55,
     "devops": 80,
+    "community": 50,
     "average": 65
   }
 }

@@ -1,175 +1,122 @@
-# Pipeline Audit Agent
+# Pipeline Audit Agent — Keywords Studios AI Consultancy Demo
 
-An agentic AI application that audits game studio production pipelines and generates prioritized optimization recommendations. Built with Claude's API and tool use to demonstrate how an AI agent can reason through complex, multi-step analysis.
+An agentic AI application that audits game studio production pipelines and generates prioritized optimization recommendations mapped to Keywords Studios products and services. Built with Claude's API (Anthropic) and tool use to demonstrate the kind of analysis KWS AI Consultancy Solutions delivers to clients.
+
+## Context: Why This Exists
+
+Keywords Studios is the world's largest technical and creative services provider to the global video games industry — 70+ studios, 25+ countries, ~13,000 employees, serving 24 of the top 25 game publishers.
+
+Keywords' **AI Consultancy Solutions** team helps game studios integrate AI into their production pipelines. This application demonstrates that methodology in action: an AI agent that reads a studio's pipeline configuration, benchmarks it against industry standards and KWS internal data, and produces a prioritized report recommending specific Keywords Studios products and services for each bottleneck.
+
+The approach mirrors what Keywords learned through **Project KARA** — applied R&D remastering a game with AI-infused pipelines — and what the Consultancy team delivers through **Innovation-as-a-Service** engagements.
 
 ## How It Works
 
-The agent follows a structured analysis workflow, visible step-by-step in the terminal:
-
 ```
-┌──────────────────────────────────────────────────────────────┐
-│  Step 1 → Read pipeline config, identify bottlenecks         │
-│  Step 2 → Look up industry benchmarks for each area          │
-│  Step 3 → Estimate cost savings from AI automation           │
-│  Step 4 → Assess implementation complexity                   │
-│  Step 5 → Generate prioritized action plan                   │
-└──────────────────────────────────────────────────────────────┘
-```
-
-At each step, the agent's chain-of-thought reasoning is displayed, so you can see *why* it makes each decision — not just the final output.
-
-## Architecture: Agentic Tool Use
-
-This project demonstrates **agentic tool use** — a pattern where the AI model drives the workflow by deciding which tools to call and in what order, rather than following a hardcoded script.
-
-```
-User Input (pipeline JSON)
-       │
-       ▼
-┌─────────────────────┐
-│   Claude (Agent)     │ ◄── System prompt with audit instructions
-│                     │
-│  Reasoning loop:    │
-│  1. Analyze config  │
-│  2. Decide next     │──── Tool call ──► lookup_benchmark()
-│     tool to call    │◄─── Result ──────┘
-│  3. Interpret       │
-│     results         │──── Tool call ──► estimate_savings()
-│  4. Decide next     │◄─── Result ──────┘
-│     step            │
-│  5. Repeat until    │──── Tool call ──► assess_complexity()
-│     analysis is     │◄─── Result ──────┘
-│     complete        │
-│  6. Synthesize      │──── Tool call ──► generate_recommendation()
-│     findings        │◄─── Result ──────┘
-└─────────────────────┘
-       │
-       ▼
-  Structured Report
+Studio Pipeline JSON ──> Claude (Agent) ──> Structured Audit Report
+                              │
+            ┌─────────────────┼─────────────────────────┐
+            │                 │                         │
+     lookup_benchmark   lookup_kws_solution      estimate_savings
+     (industry data)    (KWS products/services)  (financial impact)
+            │                 │                         │
+            └────> assess_complexity ────> generate_recommendation
+                   (difficulty + KWS         (prioritized action
+                    solution mapping)         with severity rating)
 ```
 
-### Why Agentic?
+### Step-by-step flow (visible in terminal):
 
-Traditional automation scripts follow rigid, predefined paths. The agentic approach is different:
+1. **Read pipeline config** — Parse the studio's team structure, tools, QA process, localization workflow, asset pipeline, deployment, audio, player support, and trust & safety
+2. **Benchmark against industry** — Compare metrics against industry averages, top-quartile performance, and KWS internal benchmarks (e.g., Mighty Build & Test coverage, KantanAI throughput, Project KARA timing data)
+3. **Estimate cost savings** — Calculate financial impact with implementation cost ranges and months to ROI
+4. **Assess complexity + map KWS solutions** — Rate implementation difficulty and identify the relevant Keywords Studios product (Mighty, KantanAI, Helpshift, Project KARA methodology, etc.) and division (Create, Globalize, Engage)
+5. **Generate prioritized action plan** — Structured recommendations with severity ratings, a priority matrix, and recommended next steps (AI Workshop → Proof of Concept → Strategic Roadmap → Innovation-as-a-Service)
 
-- **Claude decides** which pipeline areas to investigate based on the data it sees
-- **Claude decides** how many bottlenecks to analyze (3–5, depending on what it finds)
-- **Claude reasons** about which benchmarks are most relevant to each studio's situation
-- **Claude adapts** its analysis based on studio size, tools, and team structure
+## The Tools (What the Agent Can Call)
 
-The same agent produces meaningfully different analyses for an indie studio vs. a AAA publisher — not because of branching `if/else` logic, but because the AI reasons about each situation differently.
+| Tool | Purpose | KWS Relevance |
+|------|---------|---------------|
+| `lookup_benchmark(category)` | Industry benchmark data + KWS internal benchmarks | References Mighty, KantanAI, Helpshift, and Project KARA metrics |
+| `lookup_kws_solution(category)` | Keywords Studios product/service for a pipeline area | Maps to specific KWS products, divisions, engagement models |
+| `estimate_savings(hours, reduction%, rate)` | Financial impact with implementation costs | Tiered cost estimates based on project scale |
+| `assess_complexity(category, stack)` | Implementation difficulty + KWS solution mapping | Considers current tools and KWS integration paths |
+| `generate_recommendation(bottleneck, data, savings)` | Structured recommendation with severity rating | Formats actionable items with ROI projections |
 
-## The Tools
-
-Four tools are defined as Python functions that Claude can invoke:
-
-| Tool | Purpose | Example Use |
-|------|---------|-------------|
-| `lookup_benchmark(category)` | Returns industry benchmark data | Compare a studio's QA hours against industry average |
-| `estimate_savings(current_hours, ai_reduction_pct, hourly_rate)` | Calculates financial impact | Project annual savings from automating localization |
-| `assess_complexity(tool_category, current_stack)` | Rates implementation difficulty | How hard is it to add AI to a Jenkins-based CI/CD pipeline? |
-| `generate_recommendation(bottleneck, benchmark_data, savings)` | Formats a structured recommendation | Create a prioritized action item with severity rating |
-
-These tools use simulated data (hardcoded benchmarks and heuristics). In a production system, they would connect to real databases, vendor APIs, and historical project data.
+### Benchmark data sources:
+- GDC 2025 State of the Industry survey
+- Google Cloud gaming AI research (2025)
+- Keywords Studios division data (Globalize, Create, Engage)
+- Project KARA newsletters (Issues 003-012) — debris modeling, 3D mesh generation, lighting automation, character creation, facial animation, Agent Swarm
+- DORA State of DevOps (CI/CD benchmarks)
+- Industry reports (BCG, Newzoo)
 
 ## Quick Start
 
-### Prerequisites
-
-- Python 3.11+
-- An Anthropic API key
-
-### Setup
-
 ```bash
-# Clone / navigate to the project
 cd pipeline-auditor
-
-# Install the Anthropic SDK
 pip install anthropic
-
-# Set your API key
 export ANTHROPIC_API_KEY=your-key-here
-```
 
-### Run
-
-```bash
-# Interactive mode — choose from example studios
+# Interactive — choose from example studios
 python agent.py
 
-# Direct mode — specify a pipeline file
+# Direct
 python agent.py pipeline_examples/indie_studio.json
 
-# Save a JSON report alongside the terminal output
+# With JSON report output
 python agent.py pipeline_examples/aaa_publisher.json --json-output report.json
 ```
 
 ## Example Studios
 
-Three example pipeline configurations are included:
+| File | Studio | Profile | Key Issues |
+|------|--------|---------|------------|
+| `indie_studio.json` | Pixel Forge Games | 12-person indie, Unity, Steam-only | No QA automation, Google Sheets loc, manual deployment, no player support tooling |
+| `mid_size_studio.json` | Horizon Interactive | 85-person live-service, UE5, multi-platform | 25% QA automation, 12-day loc turnaround, unmoderated voice chat, manual lip-sync |
+| `aaa_publisher.json` | Titan Entertainment Group | 450-person AAA, 4 titles, 7 platforms, proprietary engine | 48hr perf test turnaround, 15% loc bug rate, manual facial animation, aging support tools, toxicity press coverage |
 
-| File | Studio | Size | Team | Description |
-|------|--------|------|------|-------------|
-| `indie_studio.json` | Pixel Forge Games | Indie | 12 | Solo QA tester, no CI/CD, Google Sheets localization |
-| `mid_size_studio.json` | Horizon Interactive | Mid-size | 85 | Live-service studio, partial automation, multi-platform |
-| `aaa_publisher.json` | Titan Entertainment Group | AAA | 450 | 4 active titles, proprietary engine, 15 languages |
+### Creating your own pipeline JSON
 
-### Creating Your Own
+See any example file for the full schema. Key sections: `team_structure`, `tools`, `qa_process`, `localization`, `asset_creation`, `deployment`, `audio`, `player_support`, `trust_and_safety`, `hourly_rates`. The `notes` fields are important — the agent reads them to understand qualitative pain points beyond the numbers.
 
-Create a JSON file with this structure:
+## Keywords Studios Products Referenced
 
-```json
-{
-  "studio_name": "Your Studio",
-  "studio_size": "indie|mid-size|AAA",
-  "team_size": 50,
-  "active_projects": 2,
-  "team_structure": { "developers": 20, "artists": 15, ... },
-  "tools": { "engine": "Unity", "ci_cd": "GitHub Actions", ... },
-  "qa_process": { "hours_per_week": 200, "automation_pct": 30, ... },
-  "localization": { "languages": [...], "turnaround_days": 10, ... },
-  "asset_creation": { "assets_per_artist_per_week": 8, ... },
-  "deployment": { "build_time_minutes": 60, "deploys_per_week": 5, ... },
-  "hourly_rates": { "developer": 75, "artist": 60, "average": 65 }
-}
-```
+| Product | Division | What It Does |
+|---------|----------|-------------|
+| **Mighty Build & Test** | Globalize | AI-powered test automation — defect identification, regression coverage |
+| **KantanAI** | Globalize | Game-specific neural MT — 30M+ words, 35 languages, 2-3x speed vs manual |
+| **Helpshift** | Engage | AI player support — 50%+ automation, 150+ languages, intent classification |
+| **Project KARA Methodology** | Create (Innovation) | AI-infused art pipelines — 3D gen, lighting automation, Agent Swarm |
+| **Community Sift** | Engage | Microsoft AI content moderation (KWS is Value-Added Reseller) |
+| **ToxMod** | Engage | Modulate proactive voice chat moderation |
+| **Lens** | Engage | AI sentiment analysis platform (Slalom/Snowflake partnership) |
 
 ## Project Structure
 
 ```
 pipeline-auditor/
-├── agent.py                  # Main agentic loop — Claude API with tool use
-├── tools.py                  # Tool definitions (schemas) and implementations
-├── report.py                 # Terminal report formatting and JSON export
-├── README.md                 # This file
+├── agent.py                  # Agentic loop — Claude API with tool use
+├── tools.py                  # Tool definitions, benchmarks, KWS solution catalog
+├── report.py                 # Terminal report formatting with KWS branding
+├── requirements.txt          # anthropic SDK
+├── README.md
 └── pipeline_examples/
-    ├── indie_studio.json     # Pixel Forge Games — 12-person indie team
-    ├── mid_size_studio.json  # Horizon Interactive — 85-person live-service
-    └── aaa_publisher.json    # Titan Entertainment — 450-person AAA publisher
+    ├── indie_studio.json     # Pixel Forge Games (12 people)
+    ├── mid_size_studio.json  # Horizon Interactive (85 people)
+    └── aaa_publisher.json    # Titan Entertainment Group (450 people)
 ```
 
-## How Tool Use Works (Technical Detail)
+## How Tool Use Works
 
-Claude's tool use follows a request-response loop:
-
-1. **We define tools** as JSON schemas in `TOOL_DEFINITIONS` (see `tools.py`). Each schema describes the tool's name, purpose, and expected parameters.
-
-2. **We send a message** to Claude with the tools attached. Claude's response may contain `tool_use` content blocks — structured requests to call specific tools with specific arguments.
-
-3. **We execute the tool** locally in Python using `execute_tool()`, which dispatches to the matching function.
-
-4. **We send the result back** to Claude as a `tool_result` message. Claude then reasons about the result and decides whether to call another tool or produce its final answer.
-
-5. **The loop continues** until Claude responds with `stop_reason: "end_turn"`, indicating it's finished its analysis.
-
-This is the same pattern used in production agentic systems — Claude drives the workflow, the application provides the tools, and the loop runs until the task is complete.
+Claude's tool use follows an agentic request-response loop. The key insight: **Claude decides** which tools to call and in what order based on what it sees in the pipeline data. The same agent produces meaningfully different analyses for an indie studio vs. a AAA publisher — not because of branching `if/else` logic, but because the AI reasons about each situation differently.
 
 ```python
-# Simplified version of the core loop in agent.py
+# Simplified core loop (see agent.py for full implementation)
 while True:
     response = client.messages.create(
         model="claude-sonnet-4-20250514",
+        system=SYSTEM_PROMPT,  # KWS consultant persona + methodology
         tools=TOOL_DEFINITIONS,
         messages=messages,
     )
@@ -177,8 +124,10 @@ while True:
     for block in response.content:
         if block.type == "tool_use":
             result = execute_tool(block.name, block.input)
-            # Send result back to Claude...
+            # Send result back to Claude for reasoning...
 
     if response.stop_reason == "end_turn":
-        break  # Agent is done
+        break  # Agent completed its analysis
 ```
+
+This is the same agentic pattern explored in Project KARA's Agent Swarm research — specialized AI instances coordinating to complete complex, multi-step tasks.

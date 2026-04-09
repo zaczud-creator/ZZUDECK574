@@ -3,12 +3,18 @@ Tool definitions and implementations for the pipeline audit agent.
 
 Each tool is a Python function that the agent can call via Claude's tool use.
 The TOOL_DEFINITIONS list provides the JSON schema Claude needs to invoke them.
+
+Benchmark data and Keywords Studios solution mappings are informed by:
+- Keywords Studios company overview (April 2026)
+- Project KARA newsletters (Issues 003-012)
+- GDC 2025 State of the Industry / Google Cloud gaming AI research
+- Industry benchmarks (BCG, Newzoo, GDC surveys)
 """
 
 import json
 
 # ---------------------------------------------------------------------------
-# Industry benchmark data (simulated database)
+# Industry benchmark data (informed by real industry surveys + KWS data)
 # ---------------------------------------------------------------------------
 BENCHMARKS = {
     "qa": {
@@ -19,6 +25,12 @@ BENCHMARKS = {
         "ai_assisted_bug_detection_pct": 42,
         "avg_bug_escape_rate_pct": 8,
         "top_quartile_bug_escape_rate_pct": 3,
+        "kws_benchmark": {
+            "mighty_build_test_defect_reduction_pct": 40,
+            "kws_in_house_testers": 2400,
+            "kws_automation_coverage_pct": 85,
+        },
+        "source": "GDC 2025 State of the Industry, Keywords Studios QA division data",
     },
     "localization": {
         "category": "Localization",
@@ -28,6 +40,15 @@ BENCHMARKS = {
         "avg_languages_supported": 12,
         "avg_cost_per_word_usd": 0.12,
         "ai_assisted_cost_per_word_usd": 0.04,
+        "kws_benchmark": {
+            "kantanai_words_translated": "30M+",
+            "kantanai_languages": 35,
+            "kantanai_speed_multiplier": "2-3x vs manual",
+            "kantanai_projects_per_week": 3000,
+            "kws_lqa_specialists": 700,
+            "kws_languages_supported": "50+",
+        },
+        "source": "Keywords Studios Globalize division, KantanAI platform data",
     },
     "asset_creation": {
         "category": "Asset Creation",
@@ -35,8 +56,17 @@ BENCHMARKS = {
         "top_quartile_assets_per_artist_per_week": 15,
         "ai_texture_generation_adoption_pct": 35,
         "ai_concept_art_adoption_pct": 28,
+        "ai_3d_mesh_generation_adoption_pct": 18,
         "avg_revision_cycles": 4,
         "top_quartile_revision_cycles": 2,
+        "kws_benchmark": {
+            "project_kara_debris_time_reduction": "8hrs to 2hrs (75%)",
+            "project_kara_3d_mesh_gen_time": "under 5 minutes",
+            "project_kara_optimization_time": "15 minutes",
+            "project_kara_lighting_config_reduction_pct": 78,
+            "tools_evaluated_by_kws": "500+",
+        },
+        "source": "Project KARA newsletters (Issues 004, 009, 010), GDC 2025 presentation",
     },
     "deployment": {
         "category": "Deployment & CI/CD",
@@ -46,14 +76,38 @@ BENCHMARKS = {
         "top_quartile_deploys_per_week": 12,
         "rollback_rate_pct": 15,
         "top_quartile_rollback_rate_pct": 4,
+        "source": "Industry CI/CD benchmarks, DORA State of DevOps",
     },
     "audio": {
-        "category": "Audio Production",
+        "category": "Audio & Voice Production",
         "industry_avg_lines_per_day": 200,
         "top_quartile_lines_per_day": 500,
         "ai_voice_synthesis_adoption_pct": 22,
+        "ai_lipsync_adoption_pct": 15,
         "avg_recording_session_hours": 6,
         "post_processing_hours_per_hour_recorded": 3,
+        "kws_benchmark": {
+            "audio2face_setup_time": "minutes vs days for manual rigging",
+            "kws_voiceover_languages": "50+",
+            "kws_audio_studios": ["Blindlight (casting)", "Liquid Violet (production)", "Laced (post)"],
+            "interactive_media_agreement_2025": "consent + pay parity for AI voice",
+        },
+        "source": "Project KARA Issue 012, Keywords Studios audio division, Interactive Media Agreement (July 2025)",
+    },
+    "player_support": {
+        "category": "Player Support & Community",
+        "industry_avg_first_response_hours": 24,
+        "top_quartile_first_response_hours": 4,
+        "ai_automation_rate_pct": 30,
+        "avg_csat_score": 3.5,
+        "top_quartile_csat_score": 4.2,
+        "kws_benchmark": {
+            "helpshift_automation_rate_pct": 50,
+            "helpshift_languages": "150+",
+            "helpshift_features": ["AI intent classification", "bot workflows", "Language AI translation"],
+            "lens_platform": "AI sentiment analysis (Slalom/Snowflake partnership)",
+        },
+        "source": "Keywords Studios Engage division, Helpshift platform data",
     },
     "project_management": {
         "category": "Project Management",
@@ -62,9 +116,158 @@ BENCHMARKS = {
         "ai_planning_adoption_pct": 18,
         "avg_meeting_hours_per_dev_per_week": 12,
         "top_quartile_meeting_hours_per_dev_per_week": 6,
+        "source": "GDC 2025 developer survey, industry PM benchmarks",
+    },
+    "trust_and_safety": {
+        "category": "Trust & Safety / Content Moderation",
+        "industry_avg_moderation_response_minutes": 30,
+        "top_quartile_moderation_response_minutes": 5,
+        "ai_moderation_adoption_pct": 45,
+        "avg_false_positive_rate_pct": 12,
+        "top_quartile_false_positive_rate_pct": 4,
+        "kws_benchmark": {
+            "community_sift": "Microsoft AI content moderation (Keywords is VAR)",
+            "toxmod": "Modulate proactive voice chat moderation",
+            "gaming_safety_coalition": "Co-founded with Modulate, ActiveFence, Take This",
+        },
+        "source": "Keywords Studios Engage division, Gaming Safety Coalition",
     },
 }
 
+# ---------------------------------------------------------------------------
+# Keywords Studios solution catalog
+# ---------------------------------------------------------------------------
+KWS_SOLUTIONS = {
+    "qa": {
+        "primary_product": "Mighty Build & Test",
+        "description": (
+            "AI-powered game development and testing automation platform. "
+            "Automatically tests and identifies defects, allowing issues to be "
+            "resolved faster and reducing manual QA workload."
+        ),
+        "division": "Globalize",
+        "engagement_model": "Managed service or platform license",
+        "kws_differentiator": "2,400+ in-house testers, all platforms and peripherals",
+        "ai_capabilities": [
+            "Automated defect identification",
+            "Regression test automation",
+            "Smoke test coverage",
+            "Performance testing on device farm",
+        ],
+    },
+    "localization": {
+        "primary_product": "KantanAI",
+        "description": (
+            "Purpose-built machine translation engines for games that outperform "
+            "general-purpose MT models. Cloud-based, available 24/7. Translates "
+            "30M+ words across 35 languages with 2-3x speed of manual translation."
+        ),
+        "division": "Globalize",
+        "engagement_model": "Platform + human review (MTPE)",
+        "kws_differentiator": "700+ LQA specialists, 50+ languages, gaming-specific MT models",
+        "ai_capabilities": [
+            "Gaming-specific neural MT engines",
+            "Contextual translation with game terminology",
+            "Integration with Helpshift for multilingual support",
+            "Cultural adaptation and sensitivity review",
+        ],
+    },
+    "asset_creation": {
+        "primary_product": "Project KARA Methodology (Innovation-as-a-Service)",
+        "description": (
+            "AI-infused art pipeline methodology developed through applied R&D. "
+            "Covers 3D asset generation, character creation (via Didimo Popul8), "
+            "2.5D blockout modeling, automated lighting, and procedural workflows. "
+            "Reduces debris modeling from 8hrs to 2hrs, lighting setup by 78%%."
+        ),
+        "division": "Create",
+        "engagement_model": "AI Consultancy (Innovation-as-a-Service)",
+        "kws_differentiator": "500+ AI tools evaluated, real production R&D (not theoretical)",
+        "ai_capabilities": [
+            "AI-assisted 3D mesh generation (Tripo, 3DAI Studio)",
+            "GAI concept art generation (Midjourney + style control)",
+            "2.5D blockout modeling (MLOPs + Houdini)",
+            "Automated lighting pipeline (ChatGPT + Unity)",
+            "AI character generation (Didimo Popul8)",
+            "Facial animation and lip-sync (Nvidia Audio2Face)",
+            "Agent Swarm for scene population and code generation",
+        ],
+    },
+    "audio": {
+        "primary_product": "AI-Assisted Audio Pipeline",
+        "description": (
+            "End-to-end audio services including AI-powered facial animation "
+            "(Nvidia Audio2Face), voice casting (Blindlight), production "
+            "(Liquid Violet), and post-production (Laced). Ethical AI voice "
+            "following Interactive Media Agreement standards."
+        ),
+        "division": "Create",
+        "engagement_model": "Managed service with AI augmentation",
+        "kws_differentiator": "Ethical AI voice leadership, 50+ language VO capability",
+        "ai_capabilities": [
+            "Nvidia Audio2Face lip-sync and facial animation",
+            "Move AI single-camera motion capture",
+            "AI-assisted audio post-processing",
+            "Localized voiceover at scale",
+        ],
+    },
+    "player_support": {
+        "primary_product": "Helpshift",
+        "description": (
+            "AI-driven player support platform providing personalized support "
+            "journeys. Achieves 50%+ automation for resolution across all devices "
+            "in 150+ languages. Features AI intent classification and gaming-specific "
+            "bot workflows."
+        ),
+        "division": "Engage",
+        "engagement_model": "Platform license + managed support",
+        "kws_differentiator": "Gaming-specific bots, 150+ languages, 50%+ automation",
+        "ai_capabilities": [
+            "AI-driven intent classification",
+            "Automated resolution workflows",
+            "Language AI for multilingual support",
+            "Predictive player churn modeling (Lens platform)",
+        ],
+    },
+    "trust_and_safety": {
+        "primary_product": "Community Sift + ToxMod",
+        "description": (
+            "Human moderation teams combined with AI tools. Value-Added Reseller "
+            "for Microsoft Community Sift. Partnership with Modulate ToxMod for "
+            "proactive voice chat moderation."
+        ),
+        "division": "Engage",
+        "engagement_model": "Managed service + technology platform",
+        "kws_differentiator": "Co-founder of Gaming Safety Coalition, Microsoft VAR",
+        "ai_capabilities": [
+            "AI text and image content moderation (Community Sift)",
+            "Proactive voice chat moderation (ToxMod)",
+            "AI sentiment analysis (Lens platform)",
+            "Cultural sensitivity screening",
+        ],
+    },
+    "project_management": {
+        "primary_product": "AI Consultancy (Strategic Consulting)",
+        "description": (
+            "AI-assisted project planning and velocity prediction. Agent Swarm "
+            "technology for automated task decomposition, code generation, and "
+            "knowledge base consumption."
+        ),
+        "division": "Create (Innovation)",
+        "engagement_model": "AI Consultancy engagement",
+        "kws_differentiator": "Agent Swarm R&D, practical AI integration experience",
+        "ai_capabilities": [
+            "Agent Swarm for task automation",
+            "AI-assisted sprint planning and velocity prediction",
+            "Automated status reporting and knowledge base indexing",
+            "Codebase analysis and error log summarization",
+        ],
+    },
+}
+
+# ---------------------------------------------------------------------------
+# Complexity data
+# ---------------------------------------------------------------------------
 COMPLEXITY_FACTORS = {
     "low": {"score": 1, "label": "Low", "typical_timeline_weeks": "2-4"},
     "medium": {"score": 2, "label": "Medium", "typical_timeline_weeks": "4-8"},
@@ -72,7 +275,6 @@ COMPLEXITY_FACTORS = {
     "very_high": {"score": 4, "label": "Very High", "typical_timeline_weeks": "16-26"},
 }
 
-# Complexity ratings by tool category + current stack combinations
 COMPLEXITY_MATRIX = {
     "qa": {
         "default": "medium",
@@ -80,12 +282,16 @@ COMPLEXITY_MATRIX = {
         "partial_automation": "low",
         "selenium": "low",
         "appium": "medium",
+        "testrail": "low",
+        "testcomplete": "low",
     },
     "localization": {
         "default": "medium",
         "manual_only": "high",
+        "google_sheets": "high",
         "crowdin": "low",
         "lokalise": "low",
+        "memoq": "low",
         "in_house": "medium",
     },
     "asset_creation": {
@@ -93,7 +299,9 @@ COMPLEXITY_MATRIX = {
         "substance_painter": "medium",
         "blender": "medium",
         "maya": "medium",
+        "houdini": "medium",
         "photoshop": "medium",
+        "zbrush": "medium",
         "proprietary": "very_high",
     },
     "deployment": {
@@ -108,13 +316,30 @@ COMPLEXITY_MATRIX = {
         "default": "high",
         "wwise": "medium",
         "fmod": "medium",
+        "nuendo": "medium",
+        "pro_tools": "medium",
         "manual_only": "very_high",
+    },
+    "player_support": {
+        "default": "medium",
+        "zendesk": "low",
+        "freshdesk": "low",
+        "helpshift": "low",
+        "manual_only": "high",
+        "email_only": "high",
+    },
+    "trust_and_safety": {
+        "default": "medium",
+        "manual_only": "high",
+        "community_sift": "low",
+        "in_house": "medium",
     },
     "project_management": {
         "default": "low",
         "jira": "low",
         "asana": "low",
         "trello": "low",
+        "confluence": "low",
         "spreadsheets": "medium",
     },
 }
@@ -137,6 +362,18 @@ def lookup_benchmark(category: str) -> dict:
     }
 
 
+def lookup_kws_solution(category: str) -> dict:
+    """Returns Keywords Studios solution data for a given pipeline area."""
+    key = category.lower().replace(" ", "_").replace("-", "_")
+    if key in KWS_SOLUTIONS:
+        return {"status": "found", "solution": KWS_SOLUTIONS[key]}
+    available = list(KWS_SOLUTIONS.keys())
+    return {
+        "status": "not_found",
+        "error": f"No KWS solution data for '{category}'. Available: {available}",
+    }
+
+
 def estimate_savings(
     current_hours: float, ai_reduction_pct: float, hourly_rate: float
 ) -> dict:
@@ -145,6 +382,19 @@ def estimate_savings(
     annual_savings = hours_saved * hourly_rate * 52  # weekly -> annual
     monthly_savings = annual_savings / 12
 
+    # Tiered implementation cost estimate based on scale
+    if annual_savings < 50000:
+        impl_cost_range = "$15K-$50K"
+        impl_cost_mid = 32500
+    elif annual_savings < 200000:
+        impl_cost_range = "$50K-$150K"
+        impl_cost_mid = 100000
+    else:
+        impl_cost_range = "$150K-$400K"
+        impl_cost_mid = 275000
+
+    months_to_roi = max(1, round(impl_cost_mid / max(monthly_savings, 1)))
+
     return {
         "current_weekly_hours": current_hours,
         "ai_reduction_pct": ai_reduction_pct,
@@ -152,31 +402,45 @@ def estimate_savings(
         "hourly_rate_usd": hourly_rate,
         "estimated_monthly_savings_usd": round(monthly_savings, 2),
         "estimated_annual_savings_usd": round(annual_savings, 2),
-        "break_even_note": (
-            "Typical AI tooling implementation costs $50K-$200K. "
-            f"At ${annual_savings:,.0f}/yr savings, ROI is achieved within "
-            f"{max(1, round(150000 / max(annual_savings, 1)))} months (mid-range estimate)."
-        ),
+        "implementation_cost_range": impl_cost_range,
+        "estimated_months_to_roi": months_to_roi,
     }
 
 
 def assess_complexity(tool_category: str, current_stack: str) -> dict:
     """Rates implementation difficulty for introducing AI into a pipeline area."""
     cat_key = tool_category.lower().replace(" ", "_").replace("-", "_")
-    stack_key = current_stack.lower().replace(" ", "_").replace("-", "_")
+    stack_key = current_stack.lower().replace(" ", "_").replace("-", "_").replace(",", "")
 
     matrix = COMPLEXITY_MATRIX.get(cat_key, {})
-    complexity_key = matrix.get(stack_key, matrix.get("default", "medium"))
+    # Try exact match, then check if any key is contained in the stack string
+    complexity_key = matrix.get(stack_key)
+    if complexity_key is None:
+        for known_stack, rating in matrix.items():
+            if known_stack != "default" and known_stack in stack_key:
+                complexity_key = rating
+                break
+    if complexity_key is None:
+        complexity_key = matrix.get("default", "medium")
+
     complexity = COMPLEXITY_FACTORS[complexity_key]
 
     risks = []
     if complexity["score"] >= 3:
         risks.append("Requires dedicated integration engineering resources")
-        risks.append("May disrupt existing workflows during transition")
-    if stack_key in ("proprietary", "manual_only"):
+        risks.append("May disrupt existing workflows during transition period")
+    if "proprietary" in stack_key or "manual_only" in stack_key:
         risks.append("Limited existing tooling — higher custom development needed")
     if complexity["score"] <= 2:
-        risks.append("Well-trodden path — many reference implementations available")
+        risks.append("Well-established integration path — reference implementations available")
+
+    # Add KWS-specific mitigation
+    kws_sol = KWS_SOLUTIONS.get(cat_key, {})
+    if kws_sol:
+        risks.append(
+            f"Keywords Studios offers {kws_sol.get('primary_product', 'relevant solutions')} "
+            f"via {kws_sol.get('engagement_model', 'consulting engagement')}"
+        )
 
     return {
         "tool_category": tool_category,
@@ -184,7 +448,9 @@ def assess_complexity(tool_category: str, current_stack: str) -> dict:
         "complexity_rating": complexity["label"],
         "complexity_score": complexity["score"],
         "typical_timeline": complexity["typical_timeline_weeks"],
-        "risks": risks,
+        "risks_and_mitigations": risks,
+        "kws_solution": kws_sol.get("primary_product", "AI Consultancy"),
+        "kws_division": kws_sol.get("division", "Innovation"),
     }
 
 
@@ -192,8 +458,11 @@ def generate_recommendation(
     bottleneck: str, benchmark_data: dict, savings: dict
 ) -> dict:
     """Formats a structured recommendation from analysis data."""
-    severity = "Critical" if savings.get("estimated_annual_savings_usd", 0) > 200000 else (
-        "High" if savings.get("estimated_annual_savings_usd", 0) > 100000 else "Medium"
+    annual = savings.get("estimated_annual_savings_usd", 0)
+    severity = (
+        "Critical" if annual > 200000
+        else "High" if annual > 75000
+        else "Medium"
     )
 
     return {
@@ -202,17 +471,19 @@ def generate_recommendation(
         "current_state": benchmark_data,
         "projected_impact": savings,
         "recommendation": (
-            f"Address '{bottleneck}' bottleneck by implementing AI-assisted automation. "
-            f"Projected annual savings: ${savings.get('estimated_annual_savings_usd', 0):,.0f}."
+            f"Address '{bottleneck}' bottleneck through AI-assisted automation. "
+            f"Projected annual savings: ${annual:,.0f}. "
+            f"Estimated ROI within {savings.get('estimated_months_to_roi', '?')} months."
         ),
     }
 
 
 # ---------------------------------------------------------------------------
-# Tool dispatch map (name -> function)
+# Tool dispatch map
 # ---------------------------------------------------------------------------
 TOOL_DISPATCH = {
     "lookup_benchmark": lookup_benchmark,
+    "lookup_kws_solution": lookup_kws_solution,
     "estimate_savings": estimate_savings,
     "assess_complexity": assess_complexity,
     "generate_recommendation": generate_recommendation,
@@ -239,14 +510,46 @@ TOOL_DEFINITIONS = [
         "name": "lookup_benchmark",
         "description": (
             "Look up industry benchmark data for a specific game production pipeline category. "
-            "Available categories: qa, localization, asset_creation, deployment, audio, project_management."
+            "Returns industry averages, top-quartile performance, AI adoption rates, and "
+            "Keywords Studios internal benchmarks where available. "
+            "Available categories: qa, localization, asset_creation, deployment, audio, "
+            "player_support, project_management, trust_and_safety."
         ),
         "input_schema": {
             "type": "object",
             "properties": {
                 "category": {
                     "type": "string",
-                    "description": "The pipeline category to look up benchmarks for (e.g., 'qa', 'localization', 'asset_creation').",
+                    "description": (
+                        "The pipeline category to look up benchmarks for. "
+                        "Options: qa, localization, asset_creation, deployment, audio, "
+                        "player_support, project_management, trust_and_safety."
+                    ),
+                }
+            },
+            "required": ["category"],
+        },
+    },
+    {
+        "name": "lookup_kws_solution",
+        "description": (
+            "Look up the Keywords Studios product or service solution for a given pipeline area. "
+            "Returns the recommended KWS product (e.g., Mighty Build & Test, KantanAI, Helpshift, "
+            "Project KARA methodology), the relevant division (Create, Globalize, Engage), "
+            "engagement model, and specific AI capabilities. "
+            "Available categories: qa, localization, asset_creation, audio, player_support, "
+            "trust_and_safety, project_management."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string",
+                    "description": (
+                        "The pipeline area to look up KWS solutions for. "
+                        "Options: qa, localization, asset_creation, audio, player_support, "
+                        "trust_and_safety, project_management."
+                    ),
                 }
             },
             "required": ["category"],
@@ -256,7 +559,8 @@ TOOL_DEFINITIONS = [
         "name": "estimate_savings",
         "description": (
             "Calculate the financial impact of introducing AI automation into a pipeline area. "
-            "Provide current weekly hours spent, expected AI reduction percentage, and hourly labor rate."
+            "Provide current weekly hours spent, expected AI reduction percentage, and hourly "
+            "labor rate. Returns annual savings, implementation cost estimate, and months to ROI."
         ),
         "input_schema": {
             "type": "object",
@@ -281,18 +585,25 @@ TOOL_DEFINITIONS = [
         "name": "assess_complexity",
         "description": (
             "Assess the implementation complexity of introducing AI tooling into a specific "
-            "pipeline area given the studio's current technology stack."
+            "pipeline area given the studio's current technology stack. Returns complexity "
+            "rating, timeline, risks, and the relevant Keywords Studios solution."
         ),
         "input_schema": {
             "type": "object",
             "properties": {
                 "tool_category": {
                     "type": "string",
-                    "description": "The pipeline area (e.g., 'qa', 'localization', 'asset_creation').",
+                    "description": (
+                        "The pipeline area (e.g., 'qa', 'localization', 'asset_creation', "
+                        "'audio', 'player_support', 'trust_and_safety', 'project_management')."
+                    ),
                 },
                 "current_stack": {
                     "type": "string",
-                    "description": "The studio's current tooling for this area (e.g., 'jenkins', 'manual_only', 'crowdin').",
+                    "description": (
+                        "The studio's current tooling for this area "
+                        "(e.g., 'jenkins', 'manual_only', 'crowdin', 'wwise')."
+                    ),
                 },
             },
             "required": ["tool_category", "current_stack"],
@@ -301,8 +612,9 @@ TOOL_DEFINITIONS = [
     {
         "name": "generate_recommendation",
         "description": (
-            "Generate a structured recommendation for a specific bottleneck, incorporating "
-            "benchmark comparison data and projected savings."
+            "Generate a structured, prioritized recommendation for a specific pipeline "
+            "bottleneck, incorporating benchmark comparison data, projected savings, "
+            "and severity classification."
         ),
         "input_schema": {
             "type": "object",
